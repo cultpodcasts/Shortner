@@ -3,7 +3,7 @@ export default {
 		const keyRegex = /\/([A-Za-z0-9+/]{22})$/;
 		const matches = keyRegex.exec(request.url);
 		if (matches) {
-			console.log("matches")
+			console.log("matches "+ matches[1])
 			const key = matches[1];
 			try {
 				const redirectPath = await env.kv.get(key);
