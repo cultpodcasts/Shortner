@@ -1,6 +1,6 @@
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const keyRegex = /\/([A-Za-z0-9+/]{22})$/;
+		const keyRegex = /\/([A-Za-z0-9+\-/]{22})$/;
 		const matches = keyRegex.exec(request.url);
 		if (matches) {
 			console.log("matches "+ matches[1])
