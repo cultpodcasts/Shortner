@@ -29,6 +29,7 @@ export default {
 		}
 		try {
 			env.analytics.writeDataPoint(dataPoint);
+			console.log("analytics written")
 		} catch (error) {
 			console.log(error);
 		}
