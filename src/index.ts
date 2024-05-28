@@ -1,6 +1,6 @@
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const keyRegex = /\/([A-Za-z0-9+\-/]{22})$/;
+		const keyRegex = /\/([A-Za-z0-9+_\-/]{22})$/;
 		let dataPoint: AnalyticsEngineDataPoint = { indexes: [], blobs: [] };
 		let resp = new Response('Not Found', { status: 404 });
 		const matches = keyRegex.exec(request.url);
