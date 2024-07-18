@@ -1,3 +1,6 @@
+import { stringify } from "uuid";
+import { Buffer } from 'node:buffer';
+
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const keyRegex = /\/([A-Za-z0-9+_\-/]{22})$/;
@@ -34,6 +37,43 @@ export default {
 					resp = Response.redirect(url.toString());
 				} else {
 					dataPoint.blobs!.push("Key not found");
+					const base64 = `${key}==`;
+					const uint8Array = new Uint8Array(Buffer.from(base64, "base64"));
+					const first4 = uint8Array.subarray(0, 4).reverse();
+					const second2 = uint8Array.subarray(4, 6).reverse();
+					const third2 = uint8Array.subarray(6, 8).reverse();
+					const remainder = uint8Array.subarray(8, 16);
+					const ordered = new Uint8Array(16);
+					ordered.set(first4);
+					ordered.set(second2, 4);
+					ordered.set(third2, 6);
+					ordered.set(remainder, 8);
+					const uuid = stringify(ordered);
+					var episodeQuery = {
+						"search": "",
+						"filter": `(id eq '${uuid}')`,
+						"searchMode": "any",
+						"queryType": "simple",
+						"count": false,
+						"skip": 0,
+						"top": 20,
+						"facets": [],
+						"orderby": "release desc"
+					};
+					let result = await fetch("https://api.cultpodcasts.com/search", {
+						method: "POST",
+						body: JSON.stringify(episodeQuery)
+					});
+					if (result.status == 200) {
+						const body: any = await result.json();
+						if (body.value && body.value.length == 1) {
+							const item = body.value[0];
+							const url = new URL(`${item.podcastName}/${item.id}`, env.redirect);
+							dataPoint.blobs!.push(redirectPath);
+							resp = Response.redirect(url.toString());
+						}
+					}
+
 				}
 			} catch (error) {
 				console.log(error);
