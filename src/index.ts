@@ -37,6 +37,7 @@ export default {
 					resp = Response.redirect(url.toString());
 				} else {
 					dataPoint.blobs!.push("Key not found");
+					console.log("Key not found");
 					const base64 = `${key}==`;
 					const uint8Array = new Uint8Array(Buffer.from(base64, "base64"));
 					const first4 = uint8Array.subarray(0, 4).reverse();
