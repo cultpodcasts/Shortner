@@ -60,6 +60,7 @@ export default {
 						"facets": [],
 						"orderby": "release desc"
 					};
+					console.log(`Querying for guid '${uuid}'.`)
 					let result = await fetch("https://api.cultpodcasts.com/search", {
 						method: "POST",
 						body: JSON.stringify(episodeQuery)
@@ -73,9 +74,9 @@ export default {
 							resp = Response.redirect(url.toString());
 						} else {
 							if (!body.value)
-								console.log(`Body value failure. No value. json: '${body}'.`)
+								console.log(`Body value failure. No value. json: '${JSON.stringify(body)}'.`)
 							else
-								console.log(`Body value length failure. length!=1 is '${body.value.length}'. json: '${body}'.`)
+								console.log(`Body value length failure. length!=1 is '${body.value.length}'. json: '${JSON.stringify(body)}'.`)
 						}
 					} else {
 						console.log(`Failure invoking search-service. Status-code: '${result.status}'.`);
