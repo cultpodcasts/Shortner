@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const keyRegex = /\/([A-Za-z0-9+_\-/]{22})$/;
+		const keyRegex = /\/([A-Za-z0-9+_\-\/]{22})$/;
 		let dataPoint: AnalyticsEngineDataPoint = { indexes: [], blobs: [] };
 
 		let ipAddress: string = "";
@@ -73,12 +73,12 @@ export default {
 							resp = Response.redirect(url.toString());
 						}
 					}
-
 				}
 			} catch (error) {
 				console.log(error);
 			}
 		} else {
+			console.log(`url '${request.url}' does not match regex`);
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
