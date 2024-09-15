@@ -1,4 +1,4 @@
-import {base64ToGuid} from './guid-service'
+import { base64ToGuid } from './guid-service'
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -36,7 +36,7 @@ export default {
 					resp = Response.redirect(url.toString());
 				} else {
 					dataPoint.blobs!.push("Key not found");
-					const uuid= base64ToGuid(key);
+					const uuid = base64ToGuid(key);
 					var episodeQuery = {
 						"search": "",
 						"filter": `(id eq '${uuid}')`,
@@ -57,7 +57,7 @@ export default {
 						const body: any = await result.json();
 						if (body.value && body.value.length == 1) {
 							const item = body.value[0];
-							const url = new URL(`${item.podcastName}/${item.id}`, env.redirect);
+							const url = new URL(`${encodeURIComponent(item.podcastName)}/${item.id}`, env.redirect);
 							dataPoint.blobs!.push(redirectPath);
 							resp = Response.redirect(url.toString());
 						} else {
