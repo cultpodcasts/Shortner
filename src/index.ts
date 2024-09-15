@@ -57,7 +57,11 @@ export default {
 						const body: any = await result.json();
 						if (body.value && body.value.length == 1) {
 							const item = body.value[0];
-							const url = new URL(`${encodeURIComponent(item.podcastName)}/${item.id}`, env.redirect);
+							const encodedPodcastName =
+								encodeURIComponent(item.podcastName)
+									.replaceAll("(", "%28")
+									.replaceAll(")", "%29");
+							const url = new URL(`${encodedPodcastName}/${item.id}`, env.redirect);
 							dataPoint.blobs!.push(redirectPath);
 							resp = Response.redirect(url.toString());
 						} else {
