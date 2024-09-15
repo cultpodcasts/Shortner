@@ -62,6 +62,7 @@ export default {
 									.replaceAll("(", "%28")
 									.replaceAll(")", "%29");
 							const url = new URL(`${encodedPodcastName}/${item.id}`, env.redirect);
+							console.log(`Redirect to: ${url.toString()}`)
 							dataPoint.blobs!.push(redirectPath);
 							resp = Response.redirect(url.toString());
 						} else {
