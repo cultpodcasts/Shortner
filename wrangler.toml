@@ -11,3 +11,6 @@ kv_namespaces = [
 [[analytics_engine_datasets]]
 binding = "analytics"
 dataset = "shortner"
+
+[observability]
+enabled = true
