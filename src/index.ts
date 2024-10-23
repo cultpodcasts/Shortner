@@ -1,41 +1,35 @@
 import { base64ToGuid } from './guid-service'
+import { ShortnerLog } from './ShortnerLog';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const keyRegex = /\/([A-Za-z0-9+_\-\/]{22})$/;
-		let dataPoint: AnalyticsEngineDataPoint = { indexes: [], blobs: [] };
-
-		let ipAddress: string = "";
-		let asn: string = "";
-		let city: string = "";
+		let shortnerLog: ShortnerLog = {};
 		if (request.cf != undefined && request.cf) {
-			dataPoint.blobs!.push(request.cf.clientTrustScoretr as string);
-			asn = request.cf.asn as string;
-			dataPoint.blobs!.push(asn);
-			ipAddress = request.headers.get('cf-connecting-ip') as string
-			dataPoint.blobs!.push(ipAddress);
-			dataPoint.blobs!.push(request.headers.get('User-Agent') as string);
+			shortnerLog.clientTrustScoretr = request.cf.clientTrustScoretr as string;
+			shortnerLog.asn = request.cf.asn as string;
+			shortnerLog.ipAddress = request.headers.get('cf-connecting-ip') as string;
+			shortnerLog.userAgent = request.headers.get('User-Agent') as string;
 			if (request.cf.city) {
-				city = request.cf.city as string;
-				dataPoint.blobs!.push(city);
+				shortnerLog.city = request.cf.city as string;
 			}
 			if (request.cf.country) {
-				dataPoint.blobs!.push(request.cf.country as string);
+				shortnerLog.country = request.cf.country as string;
 			}
-		}
+		} 
 		let resp = new Response('Not Found', { status: 404 });
 		const matches = keyRegex.exec(request.url);
 		if (matches) {
 			const key = matches[1];
-			dataPoint.indexes!.push(key);
+			shortnerLog.key = key;
 			try {
 				const redirectPath = await env.kv.get(key);
 				if (redirectPath) {
 					const url = new URL(redirectPath, env.redirect);
-					dataPoint.blobs!.push(redirectPath);
+					shortnerLog.url = redirectPath;
 					resp = Response.redirect(url.toString());
 				} else {
-					dataPoint.blobs!.push("Key not found");
+					shortnerLog.keyNotFound = true;
 					const uuid = base64ToGuid(key);
 					var episodeQuery = {
 						"search": "",
@@ -48,7 +42,7 @@ export default {
 						"facets": [],
 						"orderby": "release desc"
 					};
-					console.log(`Querying for guid '${uuid}'.`)
+					shortnerLog.guid = uuid;
 					let result = await fetch("https://api.cultpodcasts.com/search", {
 						method: "POST",
 						body: JSON.stringify(episodeQuery)
@@ -62,35 +56,38 @@ export default {
 									.replaceAll("(", "%28")
 									.replaceAll(")", "%29");
 							const url = new URL(`${encodedPodcastName}/${item.id}`, env.redirect);
-							console.log(`Redirect to: ${url.toString()}`)
-							dataPoint.blobs!.push(redirectPath);
+							shortnerLog.url = url.toString();
 							resp = Response.redirect(url.toString());
 						} else {
+							shortnerLog.error = true;
 							if (!body.value)
-								console.log(`Body value failure. No value. json: '${JSON.stringify(body)}'.`)
+								shortnerLog.errorMessage = `Body value failure. No value. json: '${JSON.stringify(body)}'.`;
 							else
-								console.log(`Body value length failure. length!=1 is '${body.value.length}'. json: '${JSON.stringify(body)}'.`)
+								shortnerLog.errorMessage = `Body value length failure. length!=1 is '${body.value.length}'. json: '${JSON.stringify(body)}'.`;
 						}
 					} else {
-						console.log(`Failure invoking search-service. Status-code: '${result.status}'.`);
+						shortnerLog.error = true;
+						shortnerLog.errorMessage = `Failure invoking search-service. Status-code: '${result.status}'.`;
 					}
 				}
 			} catch (error) {
-				console.log(error);
+				shortnerLog.exception = error;
+				shortnerLog.error = true;
 			}
 		} else {
-			console.log(`url '${request.url}' does not match regex`);
+			shortnerLog.error = true;
+			shortnerLog.errorMessage = `url '${request.url}' does not match regex`;
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
 			}
-			dataPoint.indexes!.push(pathName);
-			dataPoint.blobs!.push("Path does not match");
+			shortnerLog.pathName = pathName;
+			shortnerLog.pathNotMatch = true;
 		}
-		try {
-			env.analytics.writeDataPoint(dataPoint);
-		} catch (error) {
-			console.log(error);
+		if (shortnerLog.error) {
+			console.error(shortnerLog);
+		} else {
+			console.log(shortnerLog);
 		}
 		return resp;
 	}
