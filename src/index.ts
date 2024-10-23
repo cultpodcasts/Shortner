@@ -16,7 +16,7 @@ export default {
 			if (request.cf.country) {
 				shortnerLog.country = request.cf.country as string;
 			}
-		}
+		} 
 		let resp = new Response('Not Found', { status: 404 });
 		const matches = keyRegex.exec(request.url);
 		if (matches) {
