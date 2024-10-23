@@ -4,4 +4,5 @@ export interface ShortnerLogResult {
     url?: string;
     key?: string;
     keyNotFound?: boolean;
+    unsupportedRequest?: boolean;
 }

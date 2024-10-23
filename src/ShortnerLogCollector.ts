@@ -23,7 +23,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     add(changes: ShortnerLogCollection) {
         if (changes.hasOwnProperty("unsupportedRequest")) {
             this.unsupportedRequest = changes.unsupportedRequest;
-            this.error = true;
         }
         if (changes.hasOwnProperty("guid")) {
             this.guid = changes.guid;
@@ -91,6 +90,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 url: this.url,
                 key: this.key,
                 keyNotFound: this.keyNotFound,
+                unsupportedRequest: this.unsupportedRequest,
             }
         };
         if (this.verifiedBotCategory) {
@@ -102,7 +102,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
             shortnerLog.errors = {
                 exception: this.exception,
                 errorMessage: this.errorMessage,
-                unsupportedRequest: this.unsupportedRequest,
                 pathNotMatch: this.pathNotMatch
             };
         }
