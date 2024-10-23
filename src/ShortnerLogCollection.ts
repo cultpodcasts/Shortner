@@ -2,7 +2,6 @@ export interface ShortnerLogCollection {
     unsupportedRequest?: boolean;
     guid?: string;
     errorMessage?: string;
-    error?: boolean;
     exception?: unknown;
     pathNotMatch?: boolean;
     pathName?: string;

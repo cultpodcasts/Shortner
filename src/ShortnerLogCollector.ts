@@ -5,7 +5,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     unsupportedRequest?: boolean;
     guid?: string;
     errorMessage?: string;
-    error?: boolean;
     exception?: unknown;
     pathNotMatch?: boolean;
     pathName?: string;
@@ -28,9 +27,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         }
         if (changes.hasOwnProperty("errorMessage")) {
             this.errorMessage = changes.errorMessage;
-        }
-        if (changes.hasOwnProperty("error")) {
-            this.error = changes.error;
         }
         if (changes.hasOwnProperty("exception")) {
             this.exception = changes.exception;
@@ -87,9 +83,8 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 key: this.key
             }
         };
-        if (this.error || this.exception || this.keyNotFound || this.errorMessage) {
+        if (this.exception || this.keyNotFound || this.errorMessage) {
             shortnerLog.errors = {
-                error: this.error,
                 exception: this.exception,
                 keyNotFound: this.keyNotFound,
                 errorMessage: this.errorMessage
