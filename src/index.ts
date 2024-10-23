@@ -49,31 +49,30 @@ export default {
 							resp = Response.redirect(url.toString());
 						} else {
 							if (!body.value) {
-								shortnerLog.add({ error: true, errorMessage: `Body value failure. No value. json: '${JSON.stringify(body)}'.` });
+								shortnerLog.add({ errorMessage: `Body value failure. No value. json: '${JSON.stringify(body)}'.` });
 							} else {
-								shortnerLog.add({ error: true, errorMessage: `Body value length failure. length!=1 is '${body.value.length}'. json: '${JSON.stringify(body)}'.` });
+								shortnerLog.add({ errorMessage: `Body value length failure. length!=1 is '${body.value.length}'. json: '${JSON.stringify(body)}'.` });
 							}
 						}
 					} else {
-						shortnerLog.add({ error: true, errorMessage: `Failure invoking search-service. Status-code: '${result.status}'.` });
+						shortnerLog.add({ errorMessage: `Failure invoking search-service. Status-code: '${result.status}'.` });
 					}
 				}
 			} catch (error) {
-				shortnerLog.add({ exception: error, error: true });
+				shortnerLog.add({ exception: error });
 			}
 		} else {
-			shortnerLog.add({ error: true, errorMessage: `url '${request.url}' does not match regex` });
+			shortnerLog.add({ errorMessage: `url '${request.url}' does not match regex` });
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
 			}
 			shortnerLog.add({ pathName: pathName });
 			if (pathName != "/robots.txt" && pathName != "/favicon.ico" && pathName != "/") {
-				shortnerLog.add({ error: true });
+				shortnerLog.add({ pathNotMatch: true });
 			} else {
 				shortnerLog.add({ unsupportedRequest: true });
 			}
-			shortnerLog.add({ pathNotMatch: true });
 		}
 		if (shortnerLog.error) {
 			console.error(shortnerLog.toShornerLog());

@@ -17,22 +17,27 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     ipAddress?: string;
     asn?: string;
     clientTrustScoretr?: string;
+    error?: boolean;
 
     add(changes: ShortnerLogCollection) {
         if (changes.hasOwnProperty("unsupportedRequest")) {
             this.unsupportedRequest = changes.unsupportedRequest;
+            this.error = true;
         }
         if (changes.hasOwnProperty("guid")) {
             this.guid = changes.guid;
         }
         if (changes.hasOwnProperty("errorMessage")) {
             this.errorMessage = changes.errorMessage;
+            this.error = true;
         }
         if (changes.hasOwnProperty("exception")) {
             this.exception = changes.exception;
+            this.error = true;
         }
         if (changes.hasOwnProperty("pathNotMatch")) {
             this.pathNotMatch = changes.pathNotMatch;
+            this.error = true;
         }
         if (changes.hasOwnProperty("pathName")) {
             this.pathName = changes.pathName;
@@ -42,6 +47,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         }
         if (changes.hasOwnProperty("keyNotFound")) {
             this.keyNotFound = changes.keyNotFound;
+            this.error = true;
         }
         if (changes.hasOwnProperty("key")) {
             this.key = changes.key;
@@ -83,11 +89,13 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 key: this.key
             }
         };
-        if (this.exception || this.keyNotFound || this.errorMessage) {
+        if (this.error) {
             shortnerLog.errors = {
                 exception: this.exception,
                 keyNotFound: this.keyNotFound,
-                errorMessage: this.errorMessage
+                errorMessage: this.errorMessage,
+                unsupportedRequest: this.unsupportedRequest,
+                pathNotMatch: this.pathNotMatch
             };
         }
         return shortnerLog;

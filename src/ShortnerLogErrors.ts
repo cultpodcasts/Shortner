@@ -3,4 +3,5 @@ export interface ShortnerLogErrors {
     errorMessage?: string;
     exception?: unknown;
     keyNotFound?: boolean;
+    pathNotMatch?: boolean;
 }
