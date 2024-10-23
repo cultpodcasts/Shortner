@@ -59,21 +59,21 @@ export default {
 					}
 				}
 			} catch (error) {
-				shortnerLog.add({exception:error, error:true});
+				shortnerLog.add({ exception: error, error: true });
 			}
 		} else {
-			shortnerLog.add({error:true,errorMessage:`url '${request.url}' does not match regex`});
+			shortnerLog.add({ error: true, errorMessage: `url '${request.url}' does not match regex` });
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
 			}
-			shortnerLog.add({pathName:pathName});
+			shortnerLog.add({ pathName: pathName });
 			if (pathName != "/robots.txt" && pathName != "/favicon.ico" && pathName != "/") {
-				shortnerLog.add({error:true});
+				shortnerLog.add({ error: true });
 			} else {
-				shortnerLog.add({unsupportedRequest:true});
+				shortnerLog.add({ unsupportedRequest: true });
 			}
-			shortnerLog.add({pathNotMatch:true});
+			shortnerLog.add({ pathNotMatch: true });
 		}
 		if (shortnerLog.error) {
 			console.error(shortnerLog.toShornerLog());
