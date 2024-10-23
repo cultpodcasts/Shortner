@@ -18,7 +18,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     asn?: string;
     verifiedBotCategory?: string;
     asOrganization?: string;
-    error?: boolean;
+    error?: boolean; 
 
     add(changes: ShortnerLogCollection) {
         if (changes.hasOwnProperty("unsupportedRequest")) {
@@ -74,7 +74,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         }
     }
 
-    toShornerLog(): ShortnerLog {
+    toShortnerLog(): ShortnerLog {
         const shortnerLog: ShortnerLog = {
             request: {
                 country: this.country,
@@ -94,7 +94,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
             }
         };
         if (this.verifiedBotCategory) {
-            shortnerLog.bot= {
+            shortnerLog.bot = {
                 verifiedBotCategory: this.verifiedBotCategory
             };
         }
@@ -129,5 +129,4 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
             }
         }
     }
-
 }
