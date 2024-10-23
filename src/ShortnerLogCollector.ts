@@ -48,7 +48,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         }
         if (changes.hasOwnProperty("keyNotFound")) {
             this.keyNotFound = changes.keyNotFound;
-            this.error = true;
         }
         if (changes.hasOwnProperty("key")) {
             this.key = changes.key;
@@ -91,13 +90,13 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 guid: this.guid,
                 pathName: this.pathName,
                 url: this.url,
-                key: this.key
+                key: this.key,
+                keyNotFound: this.keyNotFound,
             }
         };
         if (this.error) {
             shortnerLog.errors = {
                 exception: this.exception,
-                keyNotFound: this.keyNotFound,
                 errorMessage: this.errorMessage,
                 unsupportedRequest: this.unsupportedRequest,
                 pathNotMatch: this.pathNotMatch

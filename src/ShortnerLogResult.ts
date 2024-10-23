@@ -3,4 +3,5 @@ export interface ShortnerLogResult {
     pathName?: string;
     url?: string;
     key?: string;
+    keyNotFound?: boolean;
 }
