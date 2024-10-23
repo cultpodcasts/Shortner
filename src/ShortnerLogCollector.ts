@@ -16,7 +16,8 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     userAgent?: string;
     ipAddress?: string;
     asn?: string;
-    clientTrustScoretr?: string;
+    verifiedBotCategory?: string;
+    asOrganization?: string;
     error?: boolean;
 
     add(changes: ShortnerLogCollection) {
@@ -67,8 +68,11 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         if (changes.hasOwnProperty("asn")) {
             this.asn = changes.asn;
         }
-        if (changes.hasOwnProperty("clientTrustScoretr")) {
-            this.clientTrustScoretr = changes.clientTrustScoretr;
+        if (changes.hasOwnProperty("verifiedBotCategory")) {
+            this.verifiedBotCategory = changes.verifiedBotCategory;
+        }
+        if (changes.hasOwnProperty("asOrganization")) {
+            this.asOrganization = changes.asOrganization;
         }
     }
 
@@ -80,7 +84,8 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 userAgent: this.userAgent,
                 ipAddress: this.ipAddress,
                 asn: this.asn,
-                clientTrustScoretr: this.clientTrustScoretr
+                verifiedBotCategory: this.verifiedBotCategory,
+                asOrganization: this.asOrganization
             },
             result: {
                 guid: this.guid,
@@ -104,7 +109,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     addCf(request: Request<unknown, CfProperties<unknown>>) {
         if (request.cf != undefined && request.cf) {
             this.add({
-                clientTrustScoretr: request.cf.clientTrustScoretr as string,
                 asn: request.cf.asn as string,
                 ipAddress: request.headers.get('cf-connecting-ip') as string,
                 userAgent: request.headers.get('User-Agent') as string
@@ -114,6 +118,12 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
             }
             if (request.cf.country) {
                 this.add({ country: request.cf.country as string });
+            }
+            if (request.cf.verifiedBotCategory) {
+                this.add({ verifiedBotCategory: request.cf.verifiedBotCategory as string })
+            }
+            if (request.cf.asOrganization) {
+                this.add({ asOrganization: request.cf.asOrganization as string })
             }
         }
     }

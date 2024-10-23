@@ -4,5 +4,6 @@ export interface ShortnerLogRequest {
     userAgent?: string;
     ipAddress?: string;
     asn?: string;
-    clientTrustScoretr?: string;
+    verifiedBotCategory?: string;
+    asOrganization?: string;
 }
