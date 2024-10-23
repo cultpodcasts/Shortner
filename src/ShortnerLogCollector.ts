@@ -83,7 +83,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 userAgent: this.userAgent,
                 ipAddress: this.ipAddress,
                 asn: this.asn,
-                verifiedBotCategory: this.verifiedBotCategory,
                 asOrganization: this.asOrganization
             },
             result: {
@@ -94,6 +93,11 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 keyNotFound: this.keyNotFound,
             }
         };
+        if (this.verifiedBotCategory) {
+            shortnerLog.bot= {
+                verifiedBotCategory: this.verifiedBotCategory
+            };
+        }
         if (this.error) {
             shortnerLog.errors = {
                 exception: this.exception,
