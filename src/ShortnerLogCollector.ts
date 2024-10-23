@@ -74,7 +74,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         }
     }
 
-    toShornerLog(): ShortnerLog {
+    toShortnerLog(): ShortnerLog {
         const shortnerLog: ShortnerLog = {
             request: {
                 country: this.country,
@@ -129,5 +129,4 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
             }
         }
     }
-
 }

@@ -62,22 +62,21 @@ export default {
 				shortnerLog.add({ exception: error });
 			}
 		} else {
-			shortnerLog.add({ errorMessage: `url '${request.url}' does not match regex` });
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
 			}
 			shortnerLog.add({ pathName: pathName });
 			if (pathName != "/robots.txt" && pathName != "/favicon.ico" && pathName != "/") {
-				shortnerLog.add({ pathNotMatch: true });
+				shortnerLog.add({ pathNotMatch: true, errorMessage: `url '${request.url}' does not match regex` });
 			} else {
 				shortnerLog.add({ unsupportedRequest: true });
 			}
 		}
 		if (shortnerLog.error) {
-			console.error(shortnerLog.toShornerLog());
+			console.error(shortnerLog.toShortnerLog());
 		} else {
-			console.log(shortnerLog.toShornerLog());
+			console.log(shortnerLog.toShortnerLog());
 		}
 		return resp;
 	}
