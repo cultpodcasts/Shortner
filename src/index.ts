@@ -1,4 +1,5 @@
 import { base64ToGuid } from './guid-service'
+import { oDataSearchRequest } from './oDataSearchRequest';
 import { ShortnerLogCollector } from "./ShortnerLogCollector";
 
 export default {
@@ -20,16 +21,16 @@ export default {
 				} else {
 					shortnerLog.add({ keyNotFound: true });
 					const uuid = base64ToGuid(key);
-					var episodeQuery = {
-						"search": "",
-						"filter": `(id eq '${uuid}')`,
-						"searchMode": "any",
-						"queryType": "simple",
-						"count": false,
-						"skip": 0,
-						"top": 20,
-						"facets": [],
-						"orderby": "release desc"
+					var episodeQuery: oDataSearchRequest = {
+						search: "",
+						filter: `(id eq '${uuid}')`,
+						searchMode: "any",
+						queryType: "simple",
+						count: false,
+						skip: 0,
+						top: 20,
+						facets: [],
+						orderby: "release desc"
 					};
 					shortnerLog.add({ guid: uuid });
 					let result = await fetch("https://api.cultpodcasts.com/search", {
