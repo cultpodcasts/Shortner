@@ -16,7 +16,7 @@ export default {
 			if (request.cf.country) {
 				shortnerLog.country = request.cf.country as string;
 			}
-		} 
+		}
 		let resp = new Response('Not Found', { status: 404 });
 		const matches = keyRegex.exec(request.url);
 		if (matches) {
@@ -75,13 +75,17 @@ export default {
 				shortnerLog.error = true;
 			}
 		} else {
-			shortnerLog.error = true;
 			shortnerLog.errorMessage = `url '${request.url}' does not match regex`;
 			let pathName = new URL(request.url).pathname;
 			if (pathName.length > 96) {
 				pathName = pathName.slice(0, 95);
 			}
 			shortnerLog.pathName = pathName;
+			if (pathName != "/robots.txt" && pathName != "/favicon.ico" && pathName != "/") {
+				shortnerLog.error = true;
+			} else {
+				shortnerLog.unsupportedRequest = true;
+			}
 			shortnerLog.pathNotMatch = true;
 		}
 		if (shortnerLog.error) {

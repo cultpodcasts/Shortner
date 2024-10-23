@@ -1,4 +1,5 @@
 export interface ShortnerLog {
+    unsupportedRequest?: boolean;
     guid?: string;
     errorMessage?: string;
     error?: boolean;
