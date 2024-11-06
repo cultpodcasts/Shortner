@@ -16,4 +16,5 @@ export interface ShortnerLogCollection {
     asn?: string;
     verifiedBotCategory?: string;
     asOrganization?: string;
+    episodeTitle?: string|undefined;
 }
