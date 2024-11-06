@@ -13,10 +13,10 @@ export default {
 			const key = matches[1];
 			shortnerLog.add({ key: key });
 			try {
-				const redirectPath = await env.kv.get(key);
-				if (redirectPath) {
-					const url = new URL(redirectPath, env.redirect);
-					shortnerLog.add({ url: redirectPath });
+				const kvItem = await env.kv.getWithMetadata<any>(key);
+				if (kvItem?.value) {
+					const url = new URL(kvItem.value, env.redirect);
+					shortnerLog.add({ url: kvItem.value, episodeTitle: kvItem.metadata?.episodeTitle });
 					resp = Response.redirect(url.toString());
 				} else {
 					shortnerLog.add({ keyNotFound: true });

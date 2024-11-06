@@ -5,4 +5,5 @@ export interface ShortnerLogResult {
     key?: string;
     keyNotFound?: boolean;
     unsupportedRequest?: boolean;
+    episodeTitle?: string;
 }

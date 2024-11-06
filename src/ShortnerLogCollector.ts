@@ -18,7 +18,8 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     asn?: string;
     verifiedBotCategory?: string;
     asOrganization?: string;
-    error?: boolean; 
+    error?: boolean;
+    episodeTitle?: string | undefined;
 
     add(changes: ShortnerLogCollection) {
         if (changes.hasOwnProperty("unsupportedRequest")) {
@@ -72,6 +73,9 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         if (changes.hasOwnProperty("asOrganization")) {
             this.asOrganization = changes.asOrganization;
         }
+        if (changes.hasOwnProperty("episodeTitle") && changes.episodeTitle) {
+            this.episodeTitle = changes.episodeTitle;
+        }
     }
 
     toShortnerLog(): ShortnerLog {
@@ -93,6 +97,9 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 unsupportedRequest: this.unsupportedRequest,
             }
         };
+        if (this.episodeTitle) {
+            shortnerLog.result!.episodeTitle = this.episodeTitle;
+        }
         if (this.verifiedBotCategory) {
             shortnerLog.bot = {
                 verifiedBotCategory: this.verifiedBotCategory
