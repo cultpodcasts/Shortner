@@ -18,6 +18,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     asn?: string;
     verifiedBotCategory?: string;
     asOrganization?: string;
+    clientTrustScoretr?: string;
     error?: boolean;
     episodeTitle?: string | undefined;
 
@@ -84,9 +85,12 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
                 country: this.country,
                 city: this.city,
                 userAgent: this.userAgent,
-                ipAddress: this.ipAddress,
+                clientTrustScoretr: this.clientTrustScoretr,
                 asn: this.asn,
+                ipAddress: this.ipAddress,
+                verifiedBotCategory: this.verifiedBotCategory,
                 asOrganization: this.asOrganization
+
             },
             result: {
                 guid: this.guid,
@@ -99,11 +103,6 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
         };
         if (this.episodeTitle) {
             shortnerLog.result!.episodeTitle = this.episodeTitle;
-        }
-        if (this.verifiedBotCategory) {
-            shortnerLog.bot = {
-                verifiedBotCategory: this.verifiedBotCategory
-            };
         }
         if (this.error) {
             shortnerLog.errors = {
@@ -118,6 +117,7 @@ export class ShortnerLogCollector implements ShortnerLogCollection {
     addCf(request: Request<unknown, CfProperties<unknown>>) {
         if (request.cf != undefined && request.cf) {
             this.add({
+                clientTrustScoretr: request.cf.clientTrustScoretr as string,
                 asn: request.cf.asn as string,
                 ipAddress: request.headers.get('cf-connecting-ip') as string,
                 userAgent: request.headers.get('User-Agent') as string
