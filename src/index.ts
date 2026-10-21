@@ -1,26 +1,31 @@
-import { base64ToGuid } from './guid-service'
 import { oDataSearchRequest } from './oDataSearchRequest';
+import { parseShortKey } from './short-id';
+import { playableUrl, resolveKvValue, SearchDocument, slugFor } from './redirect-paths';
 import { ShortnerLogCollector } from "./ShortnerLogCollector";
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const keyRegex = /\/([A-Za-z0-9+_\-\/]{22})$/;
+		// 22 chars: podcast episode (base-64 GUID). 23 chars: Film / TV / News (kind byte + GUID).
+		const keyRegex = /^\/([A-Za-z0-9_\-]{22,23})\/?$/;
 		const shortnerLog = new ShortnerLogCollector();
 		shortnerLog.addCf(request);
 		let resp = new Response('Not Found', { status: 404 });
-		const matches = keyRegex.exec(request.url);
+		const matches = keyRegex.exec(new URL(request.url).pathname);
 		if (matches) {
 			const key = matches[1];
 			shortnerLog.add({ key: key });
 			try {
-				const kvItem = await env.kv.getWithMetadata<any>(key);
-				if (kvItem?.value) {
-					const url = new URL(kvItem.value, env.redirect);
-					shortnerLog.add({ url: kvItem.value, episodeTitle: kvItem.metadata?.episodeTitle });
-					resp = Response.redirect(url.toString());
+				const parsed = parseShortKey(key);
+				const kvItem = parsed ? await env.kv.getWithMetadata<any>(key) : null;
+				if (!parsed) {
+					shortnerLog.add({ errorMessage: `Key '${key}' is not a valid short id.` });
+				} else if (kvItem?.value) {
+					const url = resolveKvValue(kvItem.value, env.redirect);
+					shortnerLog.add({ url: url, episodeTitle: kvItem.metadata?.episodeTitle });
+					resp = Response.redirect(url);
 				} else {
 					shortnerLog.add({ keyNotFound: true });
-					const uuid = base64ToGuid(key);
+					const uuid = parsed.guid;
 					var episodeQuery: oDataSearchRequest = {
 						search: "",
 						filter: `(id eq '${uuid}')`,
@@ -40,14 +45,16 @@ export default {
 					if (result.status == 200) {
 						const body: any = await result.json();
 						if (body.value && body.value.length == 1) {
-							const item = body.value[0];
-							const encodedPodcastName =
-								encodeURIComponent(item.podcastName)
-									.replaceAll("(", "%28")
-									.replaceAll(")", "%29");
-							const url = new URL(`${encodedPodcastName}/${item.id}`, env.redirect);
-							shortnerLog.add({ url: url.toString() });
-							resp = Response.redirect(url.toString());
+							const item: SearchDocument = body.value[0];
+							const slug = slugFor(item);
+							if (slug) {
+								// Route by the indexed kind (authoritative even if a prefixed key says otherwise).
+								const url = playableUrl(new URL(env.redirect).origin, item.contentKind, slug, uuid);
+								shortnerLog.add({ url: url });
+								resp = Response.redirect(url);
+							} else {
+								shortnerLog.add({ errorMessage: `Search result for '${uuid}' has no slug. contentKind: '${item.contentKind}'.` });
+							}
 						} else {
 							if (!body.value) {
 								shortnerLog.add({ errorMessage: `Body value failure. No value. json: '${JSON.stringify(body)}'.` });
